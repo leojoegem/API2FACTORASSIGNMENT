@@ -1,6 +1,9 @@
 <?php
 session_start();
 include 'dbConnect.php';
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+require 'vendor/autoload.php'; // Make sure PHPMailer is installed
 
 if (isset($_SESSION['user_id'])) {
     header("Location: dashboard.php");
@@ -14,15 +17,47 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['register'])) {
 
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT); // Hash the password
 
+    // Insert the new user into the database
     $sql = "INSERT INTO users (username, email, password) VALUES ('$username', '$email', '$hashedPassword')";
     $query = mysqli_query($conn, $sql);
 
     if ($query) {
+        // Generate OTP and set expiry time
+        $otp = rand(100000, 999999);
+        $otp_expiry = date("Y-m-d H:i:s", strtotime("+3 minute"));
+
+        // Send OTP to the user's email
+        $subject = "Your OTP for Registration";
+        $message = "Your OTP is: $otp";
+
+        $mail = new PHPMailer(true);
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = 'leojoegem@gmail.com'; // Your email address
+        $mail->Password = 'eofn inez hekr nfol'; // Your Gmail app password
+        $mail->Port = 587;
+        $mail->SMTPSecure = 'ssl';
+        $mail->isHTML(true);
+        $mail->setFrom('leojoegem@gmail.com', 'Online Examination System');
+        $mail->addAddress($email); // Receiver's Email
+        $mail->Subject = $subject;
+        $mail->Body = $message;
+        $mail->send();
+
+        // Update the OTP and expiry in the database
+        $sql3 = "UPDATE users SET otp='$otp', otp_expiry='$otp_expiry' WHERE email='$email'";
+        mysqli_query($conn, $sql3);
+
+        // Store the temporary user data in the session
+        $_SESSION['temp_user'] = ['email' => $email, 'otp' => $otp];
+
+        // Redirect to OTP verification page
         ?>
         <script>
-            alert("Registration Successful.");
+            alert("Registration successful. OTP sent to your email.");
             function navigateToPage() {
-                window.location.href = 'index.php';
+                window.location.href = 'otp_verification.php'; // Redirect to OTP verification page
             }
             window.onload = function() {
                 navigateToPage();
