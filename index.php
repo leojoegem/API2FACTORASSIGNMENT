@@ -5,7 +5,7 @@ session_start();
 include 'dbConnect.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
-require './vendor/autoload.php';
+require 'vendor/autoload.php';
 
 if (isset($_SESSION['user_id'])) {
     header("Location: dashboard.php");
