@@ -32,12 +32,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
         $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
         $mail->Username = 'leojoegem@gmail.com'; //host email 
-        $mail->Password = 'adsv bzob lynp pitx'; // app password of your host email
+        $mail->Password = 'eofn inez hekr nfol'; // app password of your host email
         $mail->Port = 587;
         $mail->SMTPSecure = 'ssl';
         $mail->isHTML(true);
-        $mail->setFrom('leojoegem@gmailcom', 'Online Examination System');//Sender's Email & Name
-        $mail->addAddress($email,$name); //Receiver's Email and Name
+        $mail->setFrom('leojoegem@gmail.com', 'Online Examination System');//Sender's Email & Name
+        $mail->addAddress($email); //Receiver's Email and Name
         $mail->Subject = ("$subject");
         $mail->Body = $message;
         $mail->send();
